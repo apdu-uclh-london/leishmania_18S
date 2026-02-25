@@ -1,0 +1,6 @@
+.nextflow
+.nextflow.log*
+.DS_Store
+__pycache__/
+*.pyc
+work/

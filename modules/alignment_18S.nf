@@ -1,5 +1,6 @@
 process ALIGN_18S {
     tag "$sample_id"
+    label 'process_medium'
     publishDir "${params.out}/alignment_18s", mode: 'copy'
 
     input:
@@ -12,12 +13,13 @@ process ALIGN_18S {
 
     script:
     """
-    bwa mem -t ${task.cpus} ${ref_18s} ${reads[0]} ${reads[1]} | \\
-    samtools view -b | samtools sort -o ${sample_id}_18s.bam
+    bwa mem -t ${task.cpus} 18s_ref.fasta ${reads[0]} ${reads[1]} | \\
+    samtools view -b -@ ${task.cpus} | \\
+    samtools sort -@ ${task.cpus} -o ${sample_id}_18s.bam
     
-    # Get count of mapped reads
-    COUNT=\$(samtools view -c -F 4 ${sample_id}_18s.bam)
-    echo "TOTAL_MAPPED=\$COUNT" > count.env
+    MAPPED_COUNT=\$(samtools view -c -F 4 ${sample_id}_18s.bam)
+    
+    echo "TOTAL_MAPPED=\$MAPPED_COUNT" > count.env
     source count.env
     """
 }

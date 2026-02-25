@@ -1,6 +1,6 @@
 process FASTQC {
     tag "$sample_id"
-    publishDir "${params.outdir}/fastqc", mode: 'copy'
+    publishDir "${params.out}/fastqc", mode: 'copy'
 
     input:
     tuple val(sample_id), path(reads)

@@ -2,31 +2,28 @@ process SCREEN_REPORT {
     publishDir "${params.out}/results", mode: 'copy'
 
     input:
-    tuple val(sample_id), val(mapped_count)
+    tuple val(sample_id), val(raw), val(trimmed), val(clean), val(mapped)
 
     output:
-    path "${sample_id}_screen_results.csv"
+    path "${sample_id}_screen_results.csv", emit: csv
 
     script:
     """
     python3 <<EOF
     import csv
     
-    count = int("${mapped_count}")
+    count = int("${mapped}")
     
     if count > 500:
-        result = "POSITIVE"
-        status = "PASS"
+        result, status = "POSITIVE", "PASS"
     elif count > 50:
-        result = "INCONCLUSIVE"
-        status = "REVIEW"
+        result, status = "INCONCLUSIVE", "REVIEW"
     else:
-        result = "NEGATIVE"
-        status = "PASS"
+        result, status = "NEGATIVE", "FAIL"
 
     with open("${sample_id}_screen_results.csv", 'w') as f:
-        f.write("Sample_ID,Leishmania_Detected,Mapped_18S_Reads,QC_Status\\n")
-        f.write(f"${sample_id},{result},{count},{status}\\n")
+        f.write("Sample_ID,Leishmania_Detected,Raw_Reads,Trimmed_Reads,Decontaminated_Reads,Total_Mapped_Reads,QC_Status\\n")
+        f.write(f"${sample_id},{result},${raw},${trimmed},${clean},{count},{status}\\n")
     EOF
     """
 }

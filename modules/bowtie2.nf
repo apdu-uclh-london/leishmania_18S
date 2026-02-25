@@ -1,7 +1,7 @@
 process BOWTIE2_HRR {
     tag "$sample_id"
     label 'process_high'
-    publishDir "${params.outdir}/decontaminated", mode: 'copy'
+    publishDir "${params.out}/decontaminated", mode: 'copy'
 
     input:
     tuple val(sample_id), path(reads)
